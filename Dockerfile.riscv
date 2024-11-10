@@ -1,0 +1,22 @@
+# Build Stage
+FROM riscv64/ubuntu AS builder
+WORKDIR /usr/src/myapp
+
+COPY src/ src/
+
+RUN ls --recursive src/
+
+RUN apt-get update && apt-get install -y clang
+
+RUN clang++ -fno-exceptions -O3 -I./src  -c src/detect-image.cpp -o detect-image.o
+RUN clang++ -fno-exceptions -O3 -I./src  -c src/facedetectcnn.cpp -o facedetectcnn.o
+RUN clang++ -fno-exceptions -O3 -I./src  -c src/facedetectcnn-data.cpp -o facedetectcnn-data.o
+RUN clang++ -fno-exceptions -O3 -I./src  -c src/facedetectcnn-model.cpp -o facedetectcnn-model.o
+RUN clang++ -static -fno-exceptions -O3 detect-image.o facedetectcnn.o facedetectcnn-data.o facedetectcnn-model.o  -o facedetection
+
+# Runtime Stage
+FROM scratch
+COPY --from=builder /usr/src/myapp/facedetection /facedetection
+COPY input.png /input.png
+
+CMD ["/facedetection", "/input.png"]

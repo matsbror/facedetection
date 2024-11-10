@@ -1,0 +1,6 @@
+FROM scratch
+COPY facedetection.wasm   /facedetection.wasm
+COPY input.png /input.png
+ENTRYPOINT ["/facedetection.wasm", "/input.png"]
+
+
