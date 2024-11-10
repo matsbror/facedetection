@@ -13,7 +13,7 @@ n=$1
 output_file="timing_results.csv"
 
 # Write the header to the CSV file
-echo "Run,Real Time,User Time,System Time" > $output_file
+echo "Run,Real Time" > $output_file
 
 
 # Function to pull the image and record the time
@@ -30,7 +30,8 @@ pull_image() {
 
         # Run the command and capture the timing information
         start_time=$(date +%s.%3N)
-        sudo ctr image pull $2 $image;
+        sudo nerdctl pull --quiet  $2 $image;
+        # sudo ctr image pull $2 $image;
         end_time=$(date +%s.%3N)
 
         accumulated_time=$(echo "$accumulated_time + $end_time - $start_time" | bc)
@@ -44,10 +45,10 @@ pull_image() {
 
 }
 
-image_name="docker.io/matsbror/fd-wasm:latest"
+image_name="docker.io/matsbror/fd-wasm:1.1"
 pull_image $image_name "--all-platforms"
 
-image_name="docker.io/matsbror/fd-multiarch:1.0"
+image_name="docker.io/matsbror/fd-multiarch:1.1"
 pull_image $image_name ""
 
 
